@@ -257,17 +257,19 @@ const CustomerForm = () => {
         <h3 className="signup">Sign Up</h3>
         <div>
           <form className="form-field-pan" onSubmit={verifyPan}>
-            <TextField
-              error={panError !== ""}
-              id="filled-basic"
-              label="Enter Pan Number"
-              variant="filled"
-              className="panField"
-              required
-              onChange={handlePanChange}
-              disabled={isValidPan}
-              value={pan}
-            />
+            <div>
+              <TextField
+                error={panError !== ""}
+                id="filled-basic"
+                label="Enter Pan Number"
+                variant="filled"
+                className="panField"
+                required
+                onChange={handlePanChange}
+                disabled={isValidPan}
+                value={pan}
+              />
+            </div>
 
             <Button
               color={panError !== "" ? "error" : "primary"}
