@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
 
 const CustomerList = () => {
   const [allCustomer, setAllCustomer] = useState([]);
 
   /**========================Get All customer data===================== */
-  
+
   useEffect(() => {
     const customersData = JSON.parse(localStorage.getItem("allUser"));
     setAllCustomer(customersData);
@@ -15,12 +15,29 @@ const CustomerList = () => {
 
   /**========================Get All customer data===================== */
 
+  /**=======================Delete functionality===================== */
 
+  const deleteClick = (pan) => {
+    let confirmation = window.confirm(
+      "Are you sure\nWant to delete the selected data?"
+    );
+    if (confirmation) {
+      const filterCustomer = allCustomer.filter(
+        (customer) => customer?.panNumber !== pan
+      );
+      setAllCustomer(filterCustomer);
+      localStorage.setItem("allUser", JSON.stringify(filterCustomer));
+    }
+  };
+
+  /**-===========================Delete functionality */
   return (
     <div className="p-4 ">
-        <h2>Customer List</h2>
-        <Link to="/" className="btn btn-outline-primary">Go back</Link>
-        <hr />
+      <h2>Customer List</h2>
+      <Link to="/" className="btn btn-outline-primary">
+        Go back
+      </Link>
+      <hr />
       <table className="table table-hover border">
         <thead className="bg-dark text-white">
           <tr>
@@ -52,16 +69,24 @@ const CustomerList = () => {
                   <td>{customer?.city}</td>
                   <td>{customer?.state}</td>
                   <td className="d-flex justify-content-around">
-                    <button className="btn btn-danger">
-                        <DeleteIcon />
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => deleteClick(customer?.panNumber)}
+                    >
+                      <DeleteIcon />
                     </button>
-                    <button className="btn btn-warning">
-                        <EditIcon />
-                    </button>
+                    <Link to={`/customeredit/${customer?.panNumber}`} className="btn btn-warning">
+                      <EditIcon />
+                    </Link>
                   </td>
                 </tr>
               );
             })}
+            {
+                allCustomer.length === 0 && (
+                    <h3 className="text-danger">No Records Found. Kindly add one.</h3>
+                )
+            }
         </tbody>
       </table>
     </div>

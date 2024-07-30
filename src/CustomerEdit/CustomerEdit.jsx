@@ -1,11 +1,11 @@
-import { useState } from "react";
-import "./CustomerForm.css";
+import { useEffect, useState } from "react";
+import "./CustomerEdit.css";
 
 import { Button, CircularProgress, TextField } from "@mui/material";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-const CustomerForm = () => {
+const CustomerEdit = () => {
   const [pan, setPan] = useState("");
   const [panError, setPanError] = useState("");
   const [fullNameError, setFullNameError] = useState("");
@@ -23,6 +23,27 @@ const CustomerForm = () => {
   const [state, setState] = useState("");
   const [postLoading, setPostLoading] = useState(false);
   const navigate = useNavigate();
+  const params = useParams();
+
+  /**======================Get customer data according to pan=============== */
+
+  useEffect(() => {
+    const allCustomerData = JSON.parse(localStorage.getItem("allUser"));
+    const filterCustomerData = allCustomerData.find(
+      (customer) => customer.panNumber === params.pan
+    );
+    // console.log(filterCustomerData);
+    setPan(filterCustomerData?.panNumber);
+    setFullName(filterCustomerData?.fullName);
+    setEmail(filterCustomerData?.email);
+    setAddressLine1(filterCustomerData?.addressLine1);
+    setAddressLine2(filterCustomerData?.addressLine2);
+    setPostCode(filterCustomerData?.postCode);
+    setCity(filterCustomerData?.city);
+    setState(filterCustomerData?.state);
+  }, [params.pan]);
+
+  /**======================Get customer data according to pan=============== */
 
   /**===================Validation of PAN================= */
 
@@ -147,32 +168,32 @@ const CustomerForm = () => {
 
   /**==================Verify Pan number======================== */
 
-  const verifyPan = async (e) => {
-    e.preventDefault();
-    if (!validatePan(pan)) {
-      return;
-    } else {
-      setLoading(true);
-      axios({
-        method: "POST",
-        url: `https://lab.pixel6.co/api/verify-pan.php`,
-        data: {
-          panNumber: pan,
-        },
-      })
-        .then((response) => {
-          console.log(response.data);
-          setIsValidPan(response.data?.isValid);
-          setFullName(response.data?.fullName);
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  };
+  //   const verifyPan = async (e) => {
+  //     e.preventDefault();
+  //     if (!validatePan(pan)) {
+  //       return;
+  //     } else {
+  //       setLoading(true);
+  //       axios({
+  //         method: "POST",
+  //         url: `https://lab.pixel6.co/api/verify-pan.php`,
+  //         data: {
+  //           panNumber: pan,
+  //         },
+  //       })
+  //         .then((response) => {
+  //           console.log(response.data);
+  //           setIsValidPan(response.data?.isValid);
+  //           setFullName(response.data?.fullName);
+  //         })
+  //         .catch((err) => {
+  //           console.log(err);
+  //         })
+  //         .finally(() => {
+  //           setLoading(false);
+  //         });
+  //     }
+  //   };
 
   /**==================Verify Pan number======================== */
 
@@ -208,8 +229,10 @@ const CustomerForm = () => {
 
   /**======================Form submit================================== */
 
-  const handleSubmit = async () => {
+  const updateCustomer = async () => {
     if (
+      !validatePan(pan) ||
+      !validateFullName(fullName) ||
       !validateEmail(email) ||
       !validateAddress(addressLine1) ||
       !validatePostCode(postCode)
@@ -229,17 +252,20 @@ const CustomerForm = () => {
 
       let existingData = JSON.parse(localStorage.getItem("allUser")) || [];
 
-      const filteredExistingData = existingData.find(
+      const userIndex = existingData.findIndex(
         (user) => user.panNumber === pan
       );
-      //   console.log(filteredExistingData);
-      if (filteredExistingData) {
-        alert("Pan Number already exist try with another one");
+
+      if (userIndex !== -1) {
+        existingData[userIndex] = userData;
+        alert("Customer data updated successfully");
       } else {
-        existingData.push(userData);
-        localStorage.setItem("allUser", JSON.stringify(existingData));
-        navigate("/customerlist");
+        alert("Customer with provided PAN number does not exist");
+        return;
       }
+
+      localStorage.setItem("allUser", JSON.stringify(existingData));
+      navigate("/customerlist");
     }
   };
 
@@ -256,7 +282,7 @@ const CustomerForm = () => {
       <div className="customerForm">
         <h3 className="signup">Sign Up</h3>
         <div>
-          <form className="form-field-pan" onSubmit={verifyPan}>
+          <div className="form-field-pan">
             <TextField
               error={panError !== ""}
               id="filled-basic"
@@ -268,129 +294,116 @@ const CustomerForm = () => {
               disabled={isValidPan}
               value={pan}
             />
-
-            <Button
-              color={panError !== "" ? "error" : "primary"}
-              variant="outlined"
-              className="verifyPan"
-              type="submit"
-              disabled={isValidPan}
-            >
-              Verify PAN
-              {loading && <CircularProgress size={20} />}
-            </Button>
-          </form>
+          </div>
           {panError !== "" && (
             <p className="text-danger errorMessage">{panError}</p>
           )}
         </div>
 
-        {isValidPan && (
-          <>
-            <div className="form-field-fullname">
+        <>
+          <div className="form-field-fullname">
+            <TextField
+              id="filled-basic"
+              label="Enter Full Name"
+              variant="filled"
+              className="textField"
+              required
+              value={fullName}
+              onChange={handleFullNameChange}
+            />
+            {fullNameError !== "" && (
+              <p className="text-danger errorMessage">{fullNameError}</p>
+            )}
+          </div>
+          <div className="form-field-email">
+            <TextField
+              type="email"
+              id="filled-basic"
+              label="Enter Email"
+              variant="filled"
+              className="textField"
+              required
+              value={email}
+              onChange={handleEmailChange}
+            />
+            {emailError !== "" && (
+              <p className="text-danger errorMessage">{emailError}</p>
+            )}
+            <div className="form-field-address">
               <TextField
                 id="filled-basic"
-                label="Enter Full Name"
+                label="Address Line 1"
                 variant="filled"
-                className="textField"
+                className="addressField"
                 required
-                value={fullName}
-                onChange={handleFullNameChange}
+                value={addressLine1}
+                multiline
+                rows={"3"}
+                onChange={handleAddress1Change}
               />
-              {fullNameError !== "" && (
-                <p className="text-danger errorMessage">{fullNameError}</p>
-              )}
-            </div>
-            <div className="form-field-email">
               <TextField
-                type="email"
                 id="filled-basic"
-                label="Enter Email"
+                label="Address Line 2"
                 variant="filled"
-                className="textField"
-                required
-                value={email}
-                onChange={handleEmailChange}
+                className="addressField"
+                value={addressLine2}
+                multiline
+                rows={"3"}
+                onChange={(e) => setAddressLine2(e.target.value)}
               />
-              {emailError !== "" && (
-                <p className="text-danger errorMessage">{emailError}</p>
-              )}
-              <div className="form-field-address">
-                <TextField
-                  id="filled-basic"
-                  label="Address Line 1"
-                  variant="filled"
-                  className="addressField"
-                  required
-                  value={addressLine1}
-                  multiline
-                  rows={"3"}
-                  onChange={handleAddress1Change}
-                />
-                <TextField
-                  id="filled-basic"
-                  label="Address Line 2"
-                  variant="filled"
-                  className="addressField"
-                  value={addressLine2}
-                  multiline
-                  rows={"3"}
-                  onChange={(e) => setAddressLine2(e.target.value)}
-                />
-              </div>
-              {addressError !== "" && (
-                <p className="text-danger errorMessage">{addressError}</p>
-              )}
-              <div className="form-field-postcode">
-                <TextField
-                  id="filled-basic"
-                  label="Post code"
-                  variant="filled"
-                  className="postCode"
-                  required
-                  value={postCode}
-                  onChange={handlePostCodeChange}
-                  onBlur={verifyPostCode}
-                />
-                {postLoading && <CircularProgress size={20} />}
-                <TextField
-                  id="filled-basic"
-                  label="City"
-                  variant="filled"
-                  className="postCode"
-                  value={city}
-                  required
-                  disabled
-                />
-              </div>
-              {postCodeError !== "" && (
-                <p className="text-danger errorMessage">{postCodeError}</p>
-              )}
-              <div className="form-field-postcode">
-                <TextField
-                  id="filled-basic"
-                  label="State"
-                  variant="filled"
-                  className="postCode"
-                  value={state}
-                  required
-                  disabled
-                />
-                <Button
-                  variant="outlined"
-                  color="success"
-                  className="submitButton"
-                  onClick={handleSubmit}
-                >
-                  Submit
-                </Button>
-              </div>
             </div>
-          </>
-        )}
+            {addressError !== "" && (
+              <p className="text-danger errorMessage">{addressError}</p>
+            )}
+            <div className="form-field-postcode">
+              <TextField
+                id="filled-basic"
+                label="Post code"
+                variant="filled"
+                className="postCode"
+                required
+                value={postCode}
+                onChange={handlePostCodeChange}
+                onBlur={verifyPostCode}
+              />
+              {postLoading && <CircularProgress size={20} />}
+              <TextField
+                id="filled-basic"
+                label="City"
+                variant="filled"
+                className="postCode"
+                value={city}
+                required
+                disabled
+              />
+            </div>
+            {postCodeError !== "" && (
+              <p className="text-danger errorMessage">{postCodeError}</p>
+            )}
+            <div className="form-field-postcode">
+              <TextField
+                id="filled-basic"
+                label="State"
+                variant="filled"
+                className="postCode"
+                value={state}
+                required
+                disabled
+              />
+              <Button
+                variant="outlined"
+                color="success"
+                className="submitButton"
+                onClick={updateCustomer}
+              >
+                Update
+              </Button>
+            </div>
+          </div>
+        </>
       </div>
     </div>
   );
 };
 
-export default CustomerForm;
+export default CustomerEdit;
