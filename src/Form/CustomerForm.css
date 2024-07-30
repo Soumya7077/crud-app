@@ -1,0 +1,90 @@
+
+.container{
+    padding: 20px;
+    margin: 20px;
+}
+
+.customerForm{
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 40%;
+    /* display: flex; */
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    padding: 15px;
+    margin-bottom: 30px;
+}
+
+  .customerForm:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+
+  .logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #347EDD;
+  }
+
+  .form-field-pan{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .signup{
+    color: #347EDD;
+  }
+
+  .panField{
+    width: 55%;
+  }
+  
+  .verifyPan{
+    width: 35%;
+  }
+
+  .form-field-fullname{
+    width: 100%;
+    margin-top: 30px;
+  }
+
+  .form-field-email{
+    width: 100%;
+    margin-top: 30px;
+  }
+
+  .form-field-address{
+    margin-top: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+  .addressField{
+    width: 45%;
+  }
+
+  .form-field-postcode{
+    margin-top: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .postCode{
+    width: 45%;
+  }
+
+  .submitButton{
+    width: 45%;
+  }
+
+  .errorMessage{
+    margin-bottom: 30px;
+  }
+  .textField{
+    width: 100%;
+  }
+
+  
