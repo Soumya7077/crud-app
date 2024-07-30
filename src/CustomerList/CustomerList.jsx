@@ -19,7 +19,7 @@ const CustomerList = () => {
 
   const deleteClick = (pan) => {
     let confirmation = window.confirm(
-      "Are you sure\nWant to delete the selected data?"
+      "Are you sure?\nWant to delete the selected data?"
     );
     if (confirmation) {
       const filterCustomer = allCustomer.filter(
@@ -75,18 +75,19 @@ const CustomerList = () => {
                     >
                       <DeleteIcon />
                     </button>
-                    <Link to={`/customeredit/${customer?.panNumber}`} className="btn btn-warning">
+                    <Link
+                      to={`/customeredit/${customer?.panNumber}`}
+                      className="btn btn-warning"
+                    >
                       <EditIcon />
                     </Link>
                   </td>
                 </tr>
               );
             })}
-            {
-                allCustomer.length === 0 && (
-                    <h3 className="text-danger">No Records Found. Kindly add one.</h3>
-                )
-            }
+          {allCustomer.length === 0 && (
+            <h3 className="text-danger">No Records Found. Kindly add one.</h3>
+          )}
         </tbody>
       </table>
     </div>

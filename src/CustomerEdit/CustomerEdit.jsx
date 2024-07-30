@@ -374,7 +374,7 @@ const CustomerEdit = () => {
                 className="postCode"
                 value={city}
                 required
-                disabled
+                onChange={(e) => setCity(e.target.value)}
               />
             </div>
             {postCodeError !== "" && (
@@ -387,8 +387,7 @@ const CustomerEdit = () => {
                 variant="filled"
                 className="postCode"
                 value={state}
-                required
-                disabled
+                onChange={(e) => setState(e.target.value)}
               />
               <Button
                 variant="outlined"
